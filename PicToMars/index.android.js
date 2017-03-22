@@ -54,7 +54,6 @@ export default class PicToMars extends Component {
             }}>
               <Text>Continue</Text>
             </TouchableHighlight>
-
           </View>
          </View>
         </Modal>

@@ -56,22 +56,23 @@ export default class PicToMars extends Component {
   ///////// decide if the picture is art
   decissionProcess() {
     var percentage = Math.floor(random * 100); //0.4565432467899753 -> 45
-    var message = "";
-    if(this.kindOfArt() == "ABSOLUTE" || this.kindOfArt() == "QUITE" || this.kindOfArt() == "ALMOST SHIT"){
-      message = "This is " + this.kindOfArt() + " a piece of ART!";
-      console.log(message);
-    }else{
-      message = "This is a piece of SHIT!";
-      console.log(message);
-    }
-
+    /*var message = kindOfArt();
+    console.log(message);*/
+    console.log("RANDOM");
+    console.log(random);
   }
 
 
   kindOfArt() {
-    if(random <= 0.1 ){
-      return "ABSOLUTE";
+    if(random <= 0.01 ){ // from 0 to 1%
+      return "Piece of SHIT";
     }
+    else if(random > 0.01 && random <= 0.19){
+
+    }
+
+
+
     else if(random > 0.1 && random <= 0.4)
     {
       return "QUITE";

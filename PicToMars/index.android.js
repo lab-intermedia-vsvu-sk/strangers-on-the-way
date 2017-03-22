@@ -11,13 +11,17 @@ import {
   Text,
   View,
   Button,
-  Imag
+  Image,
+  Modal,
+  TouchableHighlight
 } from 'react-native';
 
 import Camera from 'react-native-camera';
 
 
 var random = null;
+
+
 
 export default class PicToMars extends Component {
   
@@ -33,9 +37,44 @@ export default class PicToMars extends Component {
           aspect={Camera.constants.Aspect.fill}>
           <Text style={styles.capture} onPress={this.takePicture.bind(this)}>[CAPTURE]</Text>
         </Camera>
+        <Modal
+          animationType={"slide"}
+          transparent={false}
+          visible={this.state.modalVisible}
+          onRequestClose={() => {console.log("Modal has been closed.")}}
+          >
+         <View>
+          <View>
+            <Text style={{width: 100, height: 200}}>
+              {this.state.message}
+            </Text>
+
+            <TouchableHighlight onPress={() => {
+              this.setModalVisible(!this.state.modalVisible)
+            }}>
+              <Text>Continue</Text>
+            </TouchableHighlight>
+
+          </View>
+         </View>
+        </Modal>
       </View>
     
     );
+  }
+
+  state = {
+    modalVisible: false,
+    message: ""
+  }
+
+
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
+  setMessage(message){
+    this.setState({message: message});
   }
 
 
@@ -56,32 +95,36 @@ export default class PicToMars extends Component {
   ///////// decide if the picture is art
   decissionProcess() {
     var percentage = Math.floor(random * 100); //0.4565432467899753 -> 45
-    var message = "";
-    if(this.kindOfArt() == "ABSOLUTE" || this.kindOfArt() == "QUITE" || this.kindOfArt() == "ALMOST SHIT"){
-      message = "This is " + this.kindOfArt() + " a piece of ART!";
-      console.log(message);
-    }else{
-      message = "This is a piece of SHIT!";
-      console.log(message);
-    }
-
+    var message = this.kindOfArt();
+    this.setModalVisible(true);
+    this.setMessage(message);
+    console.log(message);
   }
 
 
   kindOfArt() {
-    if(random <= 0.1 ){
-      return "ABSOLUTE";
+    if(random <= 0.01 ){ // from 0 to 1%
+      return "Piece of SHIT!";
     }
-    else if(random > 0.1 && random <= 0.4)
-    {
-      return "QUITE";
+    else if(random > 0.01 && random <= 0.19){
+      return "Unsufficiant for MARS!";
     }
-    else if(random > 0.4 && random <= 0.9){
-      return "ALMOST SHIT";
+    else if(random > 0.19 && random <= 0.35){
+      return "POOR";
+    }
+    else if(random > 0.35 && random <= 0.51){
+      return "Try AGAIN!";
+    }
+    else if(random > 0.51 && random <= 0.67){
+      return "COOL!";
+    }
+    else if(random > 0.67 && random <= 0.99){
+      return "WOW!"
     }
     else{
-      return "SHIT";
+      return "MASTER PIECE!";
     }
+
   }
 
 

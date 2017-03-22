@@ -45,7 +45,7 @@ export default class UseCase1 extends Component {
         </Camera>
        
         {/*MODAL*/}
-         <Modal 
+         <Modal
           animationType={"slide"}
           transparent={false}
           visible={this.state.modalVisible}

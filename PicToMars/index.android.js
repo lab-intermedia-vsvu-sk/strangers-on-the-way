@@ -67,7 +67,7 @@ export default class PicToMars extends Component {
 
   }
 
-  
+
   kindOfArt() {
     if(random <= 0.1 ){
       return "ABSOLUTE";

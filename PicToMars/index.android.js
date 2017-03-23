@@ -38,7 +38,7 @@ export default class PicToMars extends Component {
           style={styles.preview}
           aspect={Camera.constants.Aspect.fill}>
           <Text>{this.state.percentage}</Text>
-          <Text style={styles.capture} onPress={this.takePicture.bind(this)} >SHOOT!</Text>
+          <Text style={styles.capture} onPress={this.takePicture.bind(this)} >SHOOT!</Text> {/*<- disable when capturing*/}
         </Camera>
         
         <Modal
@@ -58,7 +58,7 @@ export default class PicToMars extends Component {
               this.setModalVisible(!this.state.modalVisible);
               this.setPercentage(""); // reset percentage
             }}>
-              <Text style={styles.capture} onPress={this.sendingProcess()}>Continue</Text>
+              <Text style={styles.capture} onPress={this.sendingProcess()}>Continue</Text>   
             </TouchableHighlight>
           </View>
          </View>
@@ -94,6 +94,8 @@ export default class PicToMars extends Component {
         console.log(data);
         // if not capturing
         if(!capturing){
+          // now is capturing
+          capturing = true;
           // here picture is already taken
           /// define random number for current image
           random = Math.random();
@@ -101,14 +103,14 @@ export default class PicToMars extends Component {
           this.setPercentage(Math.round(random * 100) + " %"); // <- start animation here
           //run decission process
           setTimeout(
-            () => { this.decissionProcess(); },
+            () => { 
+              this.decissionProcess(); 
+              // capturing is down
+              capturing = false; 
+            },
             10000 // 10s of animation
           );
-          // now is capturing
-          capturing = true;
         }
-        
-        
       })
         
       .catch(err => console.error(err));
@@ -120,7 +122,6 @@ export default class PicToMars extends Component {
     var message = this.kindOfArt();
     this.setModalVisible(true);
     this.setMessage(message);
-    console.log(message);
   }
 
 
@@ -129,7 +130,7 @@ export default class PicToMars extends Component {
       return "Piece of SHIT!";
     }
     else if(random > 0.01 && random <= 0.19){
-      return "Unsufficiant for MARS!";
+      return "Insufficient for MARS!";
     }
     else if(random > 0.19 && random <= 0.35){
       return "POOR";
@@ -144,7 +145,7 @@ export default class PicToMars extends Component {
       return "WOW!"
     }
     else{
-      this.sendingProcess();
+      this.sendingProcess(); // <- only MASTER PIECE is sent to the MARS
       return "MASTER PIECE!";
     }
 
@@ -155,6 +156,7 @@ export default class PicToMars extends Component {
   sendingProcess() {
     if( random <= masterPiece ){
       //send to the MARS
+      this.setMessage(this.state.message + " ...sending to the MARS.");
     }else{
       //do noting
     }
@@ -179,10 +181,10 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   capture: {
-    flex: 0,
-    backgroundColor: '#fff',
+    flex: 1,
+    backgroundColor: '#000',
     borderRadius: 5,
-    color: '#000',
+    color: '#fff',
     padding: 10,
     margin: 40
   },

@@ -17,6 +17,7 @@ import {
 } from 'react-native';
 
 import Camera from 'react-native-camera';
+import FileSystem from 'react-native-filesystem';
 
 
 var random = null;
@@ -36,9 +37,11 @@ export default class PicToMars extends Component {
             this.camera = cam;
           }}
           style={styles.preview}
-          aspect={Camera.constants.Aspect.fill}>
-          <Text>{this.state.percentage}</Text>
-          <Text style={styles.capture} onPress={this.takePicture.bind(this)} >SHOOT!</Text> {/*<- disable when capturing*/}
+          aspect={Camera.constants.Aspect.fill}
+          captureTarget={Camera.constants.CaptureTarget.temp}
+          >
+          <Text style={styles.percentage}>{this.state.percentage}</Text>
+          <Text style={styles.capture} onPress={this.takePicture.bind(this)} >SHOOT!</Text>
         </Camera>
         
         <Modal
@@ -50,15 +53,15 @@ export default class PicToMars extends Component {
           >
          <View style={styles.modal}>
           <View>
-            <Text>
-              {this.state.message} hhh
+            <Text style={styles.message}>
+              {this.state.message}
             </Text>
 
             <TouchableHighlight onPress={() => {
               this.setModalVisible(!this.state.modalVisible);
               this.setPercentage(""); // reset percentage
             }}>
-              <Text style={styles.capture} onPress={this.sendingProcess()}>Continue</Text>   
+              <Text style={styles.capture}>Continue</Text>   
             </TouchableHighlight>
           </View>
          </View>
@@ -83,37 +86,43 @@ export default class PicToMars extends Component {
     this.setState({message: message});
   }
 
+
   setPercentage(percentage){
     this.setState({percentage: percentage});
   }
 
 
   takePicture() {
-    this.camera.capture()
+    if(!capturing){ // if camera not capturing right now
+      // now is capturing
+      capturing = true;
+      // capture
+      this.camera.capture()
       .then((data) => { 
         console.log(data);
         // if not capturing
-        if(!capturing){
-          // now is capturing
-          capturing = true;
-          // here picture is already taken
-          /// define random number for current image
-          random = Math.random();
-          // set state variable percentage
-          this.setPercentage(Math.round(random * 100) + " %"); // <- start animation here
-          //run decission process
-          setTimeout(
-            () => { 
-              this.decissionProcess(); 
-              // capturing is down
-              capturing = false; 
-            },
-            10000 // 10s of animation
-          );
-        }
+        // here picture is already taken
+        /// define random number for current image
+        random = Math.random();
+        // set state variable percentage
+        this.setPercentage(Math.round(random * 100) + " %"); // <- start animation here
+        //run decission process
+        setTimeout(
+          () => { 
+            this.decissionProcess(); 
+            // capturing is down
+            capturing = false; 
+            // TODO: DELETE IMAGE
+            checkIfFileExists(data.path);
+            deleteFile(data.path);
+          },
+          100 // 10s of animation
+        );
       })
         
       .catch(err => console.error(err));
+
+    }
   }
 
   ///////// decide if the picture is art
@@ -136,7 +145,8 @@ export default class PicToMars extends Component {
       return "POOR";
     }
     else if(random > 0.35 && random <= 0.51){
-      return "Try AGAIN!";
+      this.sendingProcess(); // <- test
+      //return "Try AGAIN!";
     }
     else if(random > 0.51 && random <= 0.67){
       return "COOL!";
@@ -146,7 +156,7 @@ export default class PicToMars extends Component {
     }
     else{
       this.sendingProcess(); // <- only MASTER PIECE is sent to the MARS
-      return "MASTER PIECE!";
+      //return "MASTER PIECE!";
     }
 
   }
@@ -154,20 +164,36 @@ export default class PicToMars extends Component {
 
   //// SENDING PROCESS
   sendingProcess() {
-    if( random <= masterPiece ){
+    if( random >= masterPiece ){
       //send to the MARS
-      this.setMessage(this.state.message + " ...sending to the MARS.");
+      //this.setTimeout();
+      return "MASTER PIECE! ...sending to the MARS. Your Tracking CODE is: " + this.getTrackingCode();
     }else{
       //do noting
+      return "test: " + this.getTrackingCode(); // <-test
     }
   }
 
+  getTrackingCode() {
+    return Math.floor( Math.random() * 100000000 );
+  }
 
 
+  
 
 }
 
+async function deleteFile(path) {
+  await FileSystem.delete(path);
+  console.log('file is deleted');
+}
 
+async function checkIfFileExists(path) {
+  const fileExists = await FileSystem.fileExists(path);
+  const directoryExists = await FileSystem.directoryExists(path);
+  console.log(`file exists: ${fileExists}`);
+  console.log(`directory exists: ${directoryExists}`);
+}
 
 
 const styles = StyleSheet.create({
@@ -181,7 +207,7 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   },
   capture: {
-    flex: 1,
+    flex: 0,
     backgroundColor: '#000',
     borderRadius: 5,
     color: '#fff',
@@ -193,6 +219,13 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center'
+  }, 
+  percentage: {
+    textAlign: 'center',
+    color: '#fff'
+  }, 
+  message: {
+    textAlign: 'center'
   }
 });
 

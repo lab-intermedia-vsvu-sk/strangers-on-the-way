@@ -18,6 +18,7 @@ import {
 
 import Camera from 'react-native-camera';
 import FileSystem from 'react-native-filesystem';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 
 var random = null;
@@ -39,9 +40,32 @@ export default class PicToMars extends Component {
           style={styles.preview}
           aspect={Camera.constants.Aspect.fill}
           captureTarget={Camera.constants.CaptureTarget.temp}
+          type={this.state.camera}
           >
-          <Text style={styles.percentage}>{this.state.percentage}</Text>
-          <Text style={styles.capture} onPress={this.takePicture.bind(this)} >SHOOT!</Text>
+          {/*<Text style={styles.percentage}>{this.state.percentage}</Text>*/}
+
+          
+          <TouchableHighlight 
+            style={styles.changeCamera} 
+            onPress={this.changeCameraType.bind(this)}
+          >
+            <Image
+              source={require('./assets/cam.png')}
+              style={{width: 50, height: 51}}
+            />
+
+          </TouchableHighlight>
+
+          <TouchableHighlight
+            style={styles.capture} 
+            onPress={this.takePicture.bind(this)}
+          >
+            <Image
+              source={require('./assets/BUTTON2.png')}
+              style={{width: 60, height: 60}}
+            />
+          </TouchableHighlight>
+        
         </Camera>
         
         <Modal
@@ -53,6 +77,31 @@ export default class PicToMars extends Component {
           >
          <View style={styles.modal}>
           <View>
+            
+            <AnimatedCircularProgress
+              ref='circularProgress'
+              size={230}
+              width={25}
+              fill={Number(this.state.percentage)}
+              tintColor="#ff0000"
+              backgroundColor="#fff"
+              style={{marginBottom: 70}}>
+              
+              
+              {
+                (fill) => (
+                  <Text style={styles.points}>
+                    { this.state.percentage } %
+                  </Text>
+                )
+              }
+            </AnimatedCircularProgress>
+
+            <Image
+              source={{uri: this.state.imagePath}}
+              style={styles.imagePreview}
+            />
+
             <Text style={styles.message}>
               {this.state.message}
             </Text>
@@ -61,7 +110,7 @@ export default class PicToMars extends Component {
               this.setModalVisible(!this.state.modalVisible);
               this.setPercentage(""); // reset percentage
             }}>
-              <Text style={styles.capture}>Continue</Text>   
+              <Text style={styles.button}>Continue</Text>   
             </TouchableHighlight>
           </View>
          </View>
@@ -74,7 +123,9 @@ export default class PicToMars extends Component {
   state = {
     modalVisible: false,
     message: "",
-    percentage: ""
+    percentage: "",
+    imagePath: "",
+    camera: 'back'
   }
   
 
@@ -91,6 +142,22 @@ export default class PicToMars extends Component {
     this.setState({percentage: percentage});
   }
 
+  setImagePath(path){
+    this.setState({imagePath: path});
+  }
+  changeCamera(type){
+    this.setState({camera: type});
+  }
+
+
+  changeCameraType(){
+    if(this.state.camera == 'front'){
+      this.changeCamera('back');
+    }else{
+      this.changeCamera('front');
+    }
+  }
+
 
   takePicture() {
     if(!capturing){ // if camera not capturing right now
@@ -104,8 +171,9 @@ export default class PicToMars extends Component {
         // here picture is already taken
         /// define random number for current image
         random = Math.random();
+        this.setImagePath(data.path);
         // set state variable percentage
-        this.setPercentage(Math.round(random * 100) + " %"); // <- start animation here
+        this.setPercentage(Math.round(random * 100)); // <- start animation here
         //run decission process
         setTimeout(
           () => { 
@@ -155,7 +223,7 @@ export default class PicToMars extends Component {
       return "WOW!"
     }
     else{
-      this.sendingProcess(); // <- only MASTER PIECE is sent to the MARS
+      return this.sendingProcess(); // <- only MASTER PIECE is sent to the MARS
       //return "MASTER PIECE!";
     }
 
@@ -175,7 +243,8 @@ export default class PicToMars extends Component {
   }
 
   getTrackingCode() {
-    return Math.floor( Math.random() * 100000000 );
+    var timestamp = new Date().getTime();
+    return timestamp; //Math.floor( Math.random() * 100000000 );
   }
 
 
@@ -208,9 +277,16 @@ const styles = StyleSheet.create({
   },
   capture: {
     flex: 0,
-    backgroundColor: '#000',
     borderRadius: 5,
-    color: '#fff',
+    padding: 10,
+    margin: 40
+  },
+  button: {
+    flex: 0,
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    color: '#000',
+    textAlign: 'center',
     padding: 10,
     margin: 40
   },
@@ -218,14 +294,40 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: '#000',
   }, 
   percentage: {
     textAlign: 'center',
     color: '#fff'
   }, 
   message: {
-    textAlign: 'center'
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: 20
+  },
+  points: {
+    backgroundColor: 'transparent',
+    position: 'absolute',
+    top: 60,
+    left: 72,
+    width: 90,
+    textAlign: 'center',
+    color: '#fff',
+    fontSize: 33,
+    fontWeight: "100"
+  },
+  imagePreview: {
+    width: 50,
+    height: 50,
+    position: 'absolute',
+    top: 120,
+    left: 90
+  },
+  changeCamera:{
+    position: 'absolute',
+    top: 25,
+    right: 25
   }
 });
 

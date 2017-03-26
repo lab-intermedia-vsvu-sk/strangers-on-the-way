@@ -243,7 +243,8 @@ export default class PicToMars extends Component {
   }
 
   getTrackingCode() {
-    return Math.floor( Math.random() * 100000000 );
+    var timestamp = new Date().getTime();
+    return timestamp; //Math.floor( Math.random() * 100000000 );
   }
 
 

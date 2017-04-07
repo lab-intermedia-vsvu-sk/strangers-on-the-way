@@ -4,7 +4,7 @@
 
 # Xcode
 #
-build/
+# build/
 *.pbxuser
 !default.pbxuser
 *.mode1v3
@@ -24,11 +24,18 @@ project.xcworkspace
 
 # Android/IntelliJ
 #
-build/
+# build/
 .idea
 .gradle
 local.properties
 *.iml
+
+# APK Keystore
+generated/
+intermediates/
+tmp/
+gradel.properties
+my-release-key.keystore
 
 # node.js
 #

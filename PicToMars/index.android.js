@@ -13,12 +13,14 @@ import {
   Button,
   Image,
   Modal,
-  TouchableHighlight
+  TouchableHighlight, 
+  Linking
 } from 'react-native';
 
 import Camera from 'react-native-camera';
 import FileSystem from 'react-native-filesystem';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+//import Hyperlink from 'react-native-hyperlink'
 
 
 var random = null;
@@ -42,8 +44,6 @@ export default class PicToMars extends Component {
           captureTarget={Camera.constants.CaptureTarget.temp}
           type={this.state.camera}
           >
-          {/*<Text style={styles.percentage}>{this.state.percentage}</Text>*/}
-
           
           <TouchableHighlight 
             style={styles.changeCamera} 
@@ -204,12 +204,15 @@ export default class PicToMars extends Component {
 
   kindOfArt() {
     if(random <= 0.01 ){ // from 0 to 1%
+      //return this.sendingProcess();
       return "Piece of SHIT!";
     }
     else if(random > 0.01 && random <= 0.19){
+      //return this.sendingProcess();
       return "Insufficient for MARS!";
     }
     else if(random > 0.19 && random <= 0.35){
+      //return this.sendingProcess();
       return "POOR";
     }
     else if(random > 0.35 && random <= 0.51){
@@ -217,9 +220,11 @@ export default class PicToMars extends Component {
       return "Try AGAIN!";
     }
     else if(random > 0.51 && random <= 0.67){
+      //return this.sendingProcess();
       return "COOL!";
     }
     else if(random > 0.67 && random <= masterPiece ){
+      //return this.sendingProcess();
       return "WOW!"
     }
     else{
@@ -232,14 +237,7 @@ export default class PicToMars extends Component {
 
   //// SENDING PROCESS
   sendingProcess() {
-    if( random >= masterPiece ){
-      //send to the MARS
-      //this.setTimeout();
-      return "MASTER PIECE! ...sending to the MARS. Your Tracking CODE is: " + this.getTrackingCode();
-    }else{
-      //do noting
-      return "test: " + this.getTrackingCode(); // <-test
-    }
+    return <MasterPieceComponent />
   }
 
   getTrackingCode() {
@@ -247,8 +245,25 @@ export default class PicToMars extends Component {
     return timestamp; //Math.floor( Math.random() * 100000000 );
   }
 
+}
 
-  
+class MasterPieceComponent extends Component {
+  render() {
+    return (
+        <Text>
+          MASTERPIECE!{'\n'}...sending to the MARS.{'\n'}Track Your PIC{'\n'}
+          <Text
+            style={{color: '#f00', textDecorationLine: 'underline'}}
+            onPress={() => Linking.openURL('http://interaktivita.vsvu.sk/pictomars?' + this.getTrackingCode() ) }
+          >HERE</Text>
+        </Text>
+    );
+  }
+
+  getTrackingCode() {
+    var timestamp = new Date().getTime();
+    return timestamp; //Math.floor( Math.random() * 100000000 );
+  }
 
 }
 
@@ -314,7 +329,7 @@ const styles = StyleSheet.create({
     width: 90,
     textAlign: 'center',
     color: '#fff',
-    fontSize: 33,
+    fontSize: 30,
     fontWeight: "100"
   },
   imagePreview: {
